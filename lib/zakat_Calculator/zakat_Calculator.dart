@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 // ====================================================================
 // 1. Color and Style Constants
@@ -12,8 +13,11 @@ class AppColors {
   // Light grey for unfocused borders
   static const Color border = Color(0xFFE0E0E0);
   static const Color textDark = Color(0xFF333333);
-  static const Color textLight = Color(0xFF757575);
+  static const Color textLight = Color(0xFF494949);
+  static const Color textHint = Color(0xFFA8A8A8);
   static const Color background = Color(0xFFF5F5F5); // Very light grey
+  // Alternating color for report items (lightest grey/off-white)
+  static const Color reportAlternatingBg = Color(0xFFF8F8F8);
 }
 
 class AppStyles {
@@ -24,14 +28,20 @@ class AppStyles {
   );
 
   static const TextStyle sectionTitle = TextStyle(
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: FontWeight.bold,
     color: AppColors.textDark,
+    height: 1.7,
   );
 
   static const TextStyle subtitle = TextStyle(
     fontSize: 14,
     color: AppColors.textLight,
+  );
+
+  static const TextStyle hintText = TextStyle(
+    fontSize: 13,
+    color: AppColors.textHint,
   );
 
   static const TextStyle reportHeader = TextStyle(
@@ -40,15 +50,22 @@ class AppStyles {
     color: AppColors.primary,
   );
 
+  // Adjusted font size for report list item label
   static const TextStyle reportLabel = TextStyle(
-    fontSize: 12,
+    fontSize: 14,
     color: AppColors.textDark,
   );
 
+  // Adjusted font size for report list item value
   static const TextStyle reportValue = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.w400,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
     color: AppColors.textDark,
+  );
+
+  static const TextStyle buttonText = TextStyle(
+    fontSize: 14,
+    color: Colors.white,
   );
 }
 
@@ -56,7 +73,7 @@ class AppStyles {
 // 2. Reusable Widgets
 // ====================================================================
 
-class ZakatInputField extends StatelessWidget {
+class ZakatInputField extends StatefulWidget {
   final String label;
   final String hintText;
   final TextEditingController controller;
@@ -71,79 +88,88 @@ class ZakatInputField extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    // Determine the initial border color. If initialValuePresent is true,
-    // it means a value is already there (like in the video's example where 5000 is present).
-    // The video shows a light border when unfocused, and a primary color border when focused.
-    final Color initialColor = initialValuePresent
-        ? AppColors.border
-        : AppColors.border;
+  State<ZakatInputField> createState() => _ZakatInputFieldState();
+}
 
+class _ZakatInputFieldState extends State<ZakatInputField> {
+  late final FocusNode _focusNode;
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isFocused = _focusNode.hasFocus;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Text color changes based on the _isFocused state
           Text(
-            label,
-            style: AppStyles.reportLabel.copyWith(fontWeight: FontWeight.w500),
+            widget.label,
+            style: AppStyles.reportLabel.copyWith(
+              fontWeight: FontWeight.w500,
+              fontSize: 14, // Consistent label size
+              color: _isFocused ? AppColors.primary : AppColors.textDark,
+            ),
           ),
           const SizedBox(height: 8.0),
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(color: initialColor, width: 1.0),
-            ),
-            child: Focus(
-              onFocusChange: (hasFocus) {
-                // Replicating the focus border color change
-                (context as Element).markNeedsBuild();
-              },
-              child: Builder(
-                builder: (context) {
-                  final isFocused = Focus.of(context).hasFocus;
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      border: Border.all(
-                        color: isFocused
-                            ? AppColors.primary
-                            : Colors.transparent,
-                        width: 2.0,
-                      ),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: controller,
-                            keyboardType: TextInputType.number,
-                            cursorColor: AppColors.primary,
-                            decoration: InputDecoration(
-                              hintText: hintText,
-                              hintStyle: AppStyles.subtitle,
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                            // Replicating the text style when value is present (5000)
-                            style: AppStyles.reportValue,
-                          ),
-                        ),
-                        // Currency symbol ৳ in primary color
-                        Text(
-                          '৳',
-                          style: AppStyles.reportValue.copyWith(
-                            color: isFocused || initialValuePresent
-                                ? AppColors.primary
-                                : AppColors.textLight,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+              color: const Color(0xFFF9F9F9),
+              border: Border.all(
+                color: _isFocused ? AppColors.primary : Colors.transparent,
+                width: 1.2,
               ),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    focusNode: _focusNode, // Assign the focus node
+                    controller: widget.controller,
+                    keyboardType: TextInputType.number,
+                    cursorColor: AppColors.primary,
+                    decoration: InputDecoration(
+                      hintText: widget.hintText,
+                      hintStyle: AppStyles.hintText,
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    style: AppStyles.reportValue.copyWith(fontSize: 14),
+                  ),
+                ),
+                // Currency symbol ৳ in primary color
+                Text(
+                  '৳',
+                  style: AppStyles.reportValue.copyWith(
+                    color: _isFocused || widget.initialValuePresent
+                        ? AppColors.primary
+                        : AppColors.textLight,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -155,20 +181,24 @@ class ZakatInputField extends StatelessWidget {
 class ZakatNextButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String text;
+  final String? iconPath; // ✅ Optional SVG path
+  final bool showIcon; // ✅ Show/hide icon
 
   const ZakatNextButton({
     super.key,
     required this.onPressed,
-    this.text = 'Next →',
+    this.text = 'Next',
+    this.iconPath = 'assets/image/svg/arrow1.svg', // ✅ Default icon
+    this.showIcon = true, // ✅ Default true
   });
 
   @override
   Widget build(BuildContext context) {
-    // Replicating the full-width, rounded button with primary color
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: SizedBox(
         height: 50,
+        width: double.infinity,
         child: ElevatedButton(
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
@@ -179,13 +209,25 @@ class ZakatNextButton extends StatelessWidget {
             elevation: 0,
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
           ),
-          child: Text(
-            text,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(text, style: AppStyles.buttonText),
+
+              // ✅ Conditional SVG Icon
+              if (showIcon && iconPath != null) ...[
+                const SizedBox(width: 12),
+                SvgPicture.asset(
+                  iconPath!,
+                  width: 20,
+                  height: 20,
+                  colorFilter: const ColorFilter.mode(
+                    Colors.white,
+                    BlendMode.srcIn,
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
       ),
@@ -209,9 +251,9 @@ class ZakatCardContainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(15.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 5,
+            color: Colors.grey.withOpacity(0.02),
+            spreadRadius: 1,
+            blurRadius: 1,
             offset: const Offset(0, 3),
           ),
         ],
@@ -242,19 +284,33 @@ class ZakatFormTemplate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AppStyles.sectionTitle),
-          const SizedBox(height: 4.0),
-          Text(subtitle, style: AppStyles.subtitle),
-          ZakatCardContainer(
-            child: Column(
-              children: [
-                ...fields,
-                ZakatNextButton(onPressed: onNext),
-              ],
+          Container(
+            color: Colors.white,
+            width: double.infinity,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: AppStyles.sectionTitle),
+                  const SizedBox(height: 8.0),
+                  Text(subtitle, style: AppStyles.subtitle),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: ZakatCardContainer(
+              child: Column(
+                children: [
+                  ...fields,
+                  ZakatNextButton(onPressed: onNext),
+                ],
+              ),
             ),
           ),
         ],
@@ -264,18 +320,12 @@ class ZakatFormTemplate extends StatelessWidget {
 }
 
 // ====================================================================
-// 4. Specific Form Screens
+// 4. Specific Form Screens (Unchanged for this fix)
 // ====================================================================
 
 // Step 1: Personal Assets
 class PersonalAssetsForm extends StatelessWidget {
   final VoidCallback onNext;
-  // final TextEditingController p1 = TextEditingController(
-  //   text: '5000',
-  // ); // Sample data for replication
-  // final TextEditingController p2 = TextEditingController(
-  //   text: '5000',
-  // ); // Sample data for replication
   final TextEditingController p1 = TextEditingController();
   final TextEditingController p2 = TextEditingController();
   final TextEditingController p3 = TextEditingController();
@@ -292,12 +342,10 @@ class PersonalAssetsForm extends StatelessWidget {
         ZakatInputField(
           label: 'Precious Ornaments: Gold, Silver, etc. (Value)',
           controller: p1,
-          // initialValuePresent: true,
         ),
         ZakatInputField(
           label: 'Bank Deposits: Fixed, Savings, Current, etc',
           controller: p2,
-          // initialValuePresent: true,
         ),
         ZakatInputField(
           label: 'Shares, Savings, Insurance, Provident Fund etc.',
@@ -412,7 +460,7 @@ class ZakatableAssetsInvestedForm extends StatelessWidget {
   }
 }
 
-// Step 5: Zakat Calculation Result Screen
+// Step 5: Zakat Calculation Result Screen (Unchanged for this fix)
 class ZakatResultScreen extends StatelessWidget {
   final VoidCallback onGenerateReport;
 
@@ -449,6 +497,7 @@ class ZakatResultScreen extends StatelessWidget {
             ZakatNextButton(
               onPressed: onGenerateReport,
               text: 'Generate Report',
+              showIcon: false,
             ),
           ],
         ),
@@ -475,7 +524,13 @@ class ZakatResultScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(value, style: AppStyles.headerTitle.copyWith(fontSize: 18)),
+              Text(
+                value,
+                style: AppStyles.headerTitle.copyWith(
+                  fontSize: 18,
+                  color: AppColors.primary,
+                ),
+              ),
               const Text(
                 '৳',
                 style: TextStyle(
@@ -492,7 +547,7 @@ class ZakatResultScreen extends StatelessWidget {
   }
 }
 
-// Step 6: Entire Report Screen
+// Step 6: Entire Report Screen (FIXED)
 class EntireReportScreen extends StatelessWidget {
   final VoidCallback onDownloadReport;
 
@@ -562,7 +617,6 @@ class EntireReportScreen extends StatelessWidget {
           'value': '500000',
         },
       ],
-      // Adding a Total Zakat section as shown at the end of the report
       'Total Zakat': [
         {'label': 'Total eligible wealth for Zakat', 'value': '500000'},
         {'label': 'Your total zakat in this year', 'value': '500000'},
@@ -575,25 +629,40 @@ class EntireReportScreen extends StatelessWidget {
     };
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: ZakatCardContainer(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Your Entire Report',
-              style: AppStyles.sectionTitle.copyWith(color: AppColors.textDark),
+            Center(
+              child: Text(
+                'Your Entire Report',
+                style: AppStyles.sectionTitle.copyWith(
+                  color: AppColors.textDark,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
-            const SizedBox(height: 20.0),
+            const SizedBox(height: 12.0),
+
+            // Divider is removed to match the left screen more closely
             ...reportData.entries.map((entry) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildReportHeader(entry.key),
-                  const SizedBox(height: 8.0),
-                  ...entry.value.map(
-                    (item) => _buildReportItem(item['label']!, item['value']!),
-                  ),
+                  // Use ListView.builder-like logic to alternate colors
+                  ...entry.value.asMap().entries.map((mapEntry) {
+                    int idx = mapEntry.key;
+                    var item = mapEntry.value;
+                    return _buildReportItem(
+                      item['label']!,
+                      item['value']!,
+                      idx,
+                      entry.value.length, // ✅ Total items count
+                    );
+                  }),
                   const SizedBox(height: 20.0),
                 ],
               );
@@ -603,6 +672,7 @@ class EntireReportScreen extends StatelessWidget {
             ZakatNextButton(
               onPressed: onDownloadReport,
               text: 'Download Report',
+              showIcon: false,
             ),
           ],
         ),
@@ -611,40 +681,74 @@ class EntireReportScreen extends StatelessWidget {
   }
 
   Widget _buildReportHeader(String title) {
-    // Replicating the header style with light green background
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
-      decoration: BoxDecoration(
-        color: AppColors.lightGreen,
-        borderRadius: BorderRadius.circular(8.0),
+      // Removed horizontal padding here as it's already in the card container's inner padding
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 0),
+      // margin: const EdgeInsets.only(top: 15.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
+        decoration: BoxDecoration(
+          color: AppColors.lightGreen,
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Text(title, style: AppStyles.reportHeader),
       ),
-      child: Text(title, style: AppStyles.reportHeader),
     );
   }
 
-  Widget _buildReportItem(String label, String value) {
-    // Replicating the individual report item row
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+  // FIX: Implemented logic to alternate background color and adjusted padding/font styles
+  Widget _buildReportItem(
+    String label,
+    String value,
+    int index,
+    int totalItems,
+  ) {
+    final Color backgroundColor = index.isEven
+        ? AppColors.reportAlternatingBg
+        : Colors.transparent;
+
+    // ✅ Conditional BorderRadius
+    BorderRadius? borderRadius;
+    if (index == 0) {
+      // First item: top corners rounded
+      borderRadius = const BorderRadius.only(
+        topLeft: Radius.circular(8),
+        topRight: Radius.circular(8),
+      );
+    } else if (index == totalItems - 1) {
+      // Last item: bottom corners rounded
+      borderRadius = const BorderRadius.only(
+        bottomLeft: Radius.circular(8),
+        bottomRight: Radius.circular(8),
+      );
+    }
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: borderRadius, // ✅ Dynamic border radius
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(child: Text(label, style: AppStyles.reportLabel)),
           const SizedBox(width: 10.0),
+          Container(
+            height: 35,
+            width: 1,
+            color: AppColors.border,
+            margin: const EdgeInsets.symmetric(horizontal: 10.0),
+          ),
+          const SizedBox(width: 14.0),
           Row(
             children: [
               Text(value, style: AppStyles.reportValue),
               const SizedBox(width: 4.0),
-              const Text(
-                '৳',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDark, // Dark color for value text
-                ),
-              ),
+              const Text('৳', style: TextStyle(fontSize: 18)),
             ],
           ),
         ],
@@ -665,7 +769,7 @@ class ZakatCalculatorScreen extends StatefulWidget {
 }
 
 class _ZakatCalculatorScreenState extends State<ZakatCalculatorScreen> {
-  int _currentStep = 1;
+  int _currentStep = 6; // Start at step 6 to show the report screen for fixing
 
   void _nextStep() {
     setState(() {
@@ -725,7 +829,12 @@ class _ZakatCalculatorScreenState extends State<ZakatCalculatorScreen> {
               )
             : null,
       ),
-      body: _buildCurrentScreen(),
+      body: Column(
+        children: [
+          const SizedBox(height: 2),
+          Expanded(child: _buildCurrentScreen()),
+        ],
+      ),
     );
   }
 }
