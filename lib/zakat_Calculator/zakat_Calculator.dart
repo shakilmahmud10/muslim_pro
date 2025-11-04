@@ -163,10 +163,11 @@ class _ZakatInputFieldState extends State<ZakatInputField> {
                 Text(
                   '৳',
                   style: AppStyles.reportValue.copyWith(
+                    fontWeight: FontWeight.w400,
                     color: _isFocused || widget.initialValuePresent
                         ? AppColors.primary
                         : AppColors.textLight,
-                    fontSize: 14,
+                    fontSize: 18,
                   ),
                 ),
               ],
