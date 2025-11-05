@@ -166,7 +166,7 @@ class _ZakatInputFieldState extends State<ZakatInputField> {
                     fontWeight: FontWeight.w400,
                     color: _isFocused || widget.initialValuePresent
                         ? AppColors.primary
-                        : AppColors.textLight,
+                        : AppColors.textHint,
                     fontSize: 18,
                   ),
                 ),
@@ -528,7 +528,8 @@ class ZakatResultScreen extends StatelessWidget {
               Text(
                 value,
                 style: AppStyles.headerTitle.copyWith(
-                  fontSize: 18,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
                   color: AppColors.primary,
                 ),
               ),
@@ -536,7 +537,7 @@ class ZakatResultScreen extends StatelessWidget {
                 '৳',
                 style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                  // fontWeight: FontWeight.bold,
                   color: AppColors.primary,
                 ),
               ),
