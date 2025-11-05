@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:muslim_pro/add_to_bookmark/add_to_bookmark.dart';
 import 'package:muslim_pro/surah_card/surah_card.dart';
 import 'package:muslim_pro/zakat_Calculator/zakat_Calculator.dart';
 
@@ -39,6 +40,7 @@ class Allpage extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -60,6 +62,35 @@ class Allpage extends StatelessWidget {
               ),
               child: const Text(
                 "Zakat Calculator",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddToBookmark(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                "Add to bookmark",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,

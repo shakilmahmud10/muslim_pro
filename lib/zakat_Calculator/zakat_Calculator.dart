@@ -771,7 +771,7 @@ class ZakatCalculatorScreen extends StatefulWidget {
 }
 
 class _ZakatCalculatorScreenState extends State<ZakatCalculatorScreen> {
-  int _currentStep = 6; // Start at step 6 to show the report screen for fixing
+  int _currentStep = 1; // Start at step 6 to show the report screen for fixing
 
   void _nextStep() {
     setState(() {
