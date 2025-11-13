@@ -27,7 +27,7 @@ class AppTextStyles {
   static const TextStyle settingsLabel = TextStyle(
     color: AppColors.primaryText,
     fontSize: 16,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.bold,
   );
   static const TextStyle settingsValue = TextStyle(
     color: AppColors.primaryText,
@@ -121,11 +121,12 @@ class _SettingsSliderRowState extends State<SettingsSliderRow> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(widget.label, style: AppTextStyles.settingsLabel),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
@@ -179,7 +180,7 @@ class SettingsDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -190,10 +191,20 @@ class SettingsDropdown extends StatelessWidget {
             ),
 
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            // height: 3,
+            padding: const EdgeInsets.only(
+              right: 12,
+              left: 16.0,
+              top: 4,
+              bottom: 4,
+            ),
             decoration: BoxDecoration(
               color: AppColors.dropdownBackgroundColor,
               borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(
+                color: AppColors.primaryText.withOpacity(0.05),
+                width: 1,
+              ),
             ),
             child: DropdownButtonFormField<String>(
               decoration: const InputDecoration(
@@ -210,7 +221,10 @@ class SettingsDropdown extends StatelessWidget {
               items: items.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
-                  child: Text(value),
+                  child: Text(
+                    value,
+                    style: TextStyle(fontWeight: FontWeight.w400),
+                  ),
                 );
               }).toList(),
               onChanged: onChanged,
@@ -328,14 +342,25 @@ class SettingsPage extends StatelessWidget {
               items: const ['Uthma', 'Madani', 'Indo-Pak'],
               selectedItem: 'Uthma',
               onChanged: (value) {},
-              showLabel: false,
+              showLabel: true,
             ),
             SettingsDropdown(
               label: 'Arabic Font',
               items: const ['KFGQ Hafs', 'Naskh', 'Scheherazade'],
               selectedItem: 'KFGQ Hafs',
               onChanged: (value) {},
-              showLabel: false,
+              showLabel: true,
+            ),
+
+            Container(height: 10.0, color: AppColors.sectionDividerColor),
+            const SettingsSectionHeader(
+              icon: Icons.color_lens_outlined,
+              title: 'Appearence',
+            ),
+            const SettingsToggleRow(
+              label: 'Always On Display Mode',
+              value: true,
+              onChanged: null,
             ),
 
             const SizedBox(height: 20),
@@ -377,7 +402,7 @@ class _SurahPageState extends State<SurahPage> {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double pageMargin = 10.0; // Sob dike 10px margin
     // SettingsPanelWidth screen er 75%
-    final double settingsPanelWidth = screenWidth * 0.8;
+    final double settingsPanelWidth = screenWidth * 0.75;
 
     // MainContentPage er left position (Pushing effect)
     // Settings bondho: 0.0
@@ -435,24 +460,34 @@ class _SurahPageState extends State<SurahPage> {
 
         centerTitle: true,
         // Settings/Tools Icon
-                actions: [
+        actions: [
           IconButton(
-            onPressed: _toggleSettings,
-            // SVG Icon ke ekta Fixed Size Container er moddhe rakha holo
-            icon: SizedBox(
-              width: appBarIconSize, // 24.0
-              height: appBarIconSize, // 24.0
-              child: SvgPicture.asset(
-                'assets/image/svg/settings1.svg',
-                fit: BoxFit.contain, // SVG ke container e adjust korbe
-                colorFilter: const ColorFilter.mode( // Icon color set korar jonno
-                  AppColors.primaryText,
-                  BlendMode.srcIn,
-                ),
-              ),
+            icon: const Icon(
+              Icons.build_rounded,
+              color: appBarIconColor,
+              size: appBarIconSize,
             ),
+            onPressed: () {
+              _toggleSettings(); // Open SettingsPanel
+            },
           ),
-          // const SizedBox(width: 8),
+          // IconButton(
+          //   onPressed: _toggleSettings,
+          //   // SVG Icon ke ekta Fixed Size Container er moddhe rakha holo
+          //   icon: SizedBox(
+          //     width: appBarIconSize, // 24.0
+          //     height: appBarIconSize, // 24.0
+          //     child: SvgPicture.asset(
+          //       'assets/image/svg/settings1.svg',
+          //       fit: BoxFit.contain, // SVG ke container e adjust korbe
+          //       colorFilter: const ColorFilter.mode( // Icon color set korar jonno
+          //         AppColors.primaryText,
+          //         BlendMode.srcIn,
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          const SizedBox(width: 8),
         ],
       ),
 
