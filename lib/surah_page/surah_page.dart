@@ -82,11 +82,16 @@ class SettingsToggleRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: AppTextStyles.settingsLabel),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeColor: AppColors.primaryGreen,
-            inactiveTrackColor: AppColors.dropdownBackgroundColor,
+          Transform.scale(
+            scale: 0.75,
+            child: Switch(
+              value: value,
+              onChanged: onChanged,
+              activeColor: AppColors.primaryGreen,
+              inactiveThumbColor: const Color(0xFF78909C), // Dark gray thumb
+              inactiveTrackColor: const Color(0xFFECEFF1), // Soft gray track
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
           ),
         ],
       ),
@@ -278,94 +283,119 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20.0),
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SettingsSectionHeader(
-              icon: Icons.description_rounded,
-              title: 'Content Settings',
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.0),
             ),
-            SettingsDropdown(
-              label: 'Language',
-              items: const ['English', 'Bengali', 'Urdu'],
-              selectedItem: 'English',
-              onChanged: (value) {},
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SettingsSectionHeader(
+                  icon: Icons.description_rounded,
+                  title: 'Content Settings',
+                ),
+                SettingsDropdown(
+                  label: 'Language',
+                  items: const ['English', 'Bengali', 'Urdu'],
+                  selectedItem: 'English',
+                  onChanged: (value) {},
+                ),
+                const SettingsToggleRow(
+                  label: 'Show Arabic',
+                  value: true,
+                  onChanged: null,
+                ),
+                const SettingsToggleRow(
+                  label: 'Show Translation',
+                  value: true,
+                  onChanged: null,
+                ),
+                const SettingsToggleRow(
+                  label: 'Show Transliteration',
+                  value: false,
+                  onChanged: null,
+                ),
+                const SettingsToggleRow(
+                  label: 'Show Reference',
+                  value: false,
+                  onChanged: null,
+                ),
+              ],
             ),
-            const SettingsToggleRow(
-              label: 'Show Arabic',
-              value: true,
-              onChanged: null,
-            ),
-            const SettingsToggleRow(
-              label: 'Show Translation',
-              value: true,
-              onChanged: null,
-            ),
-            const SettingsToggleRow(
-              label: 'Show Transliteration',
-              value: false,
-              onChanged: null,
-            ),
-            const SettingsToggleRow(
-              label: 'Show Reference',
-              value: false,
-              onChanged: null,
-            ),
+          ),
+          const SizedBox(height: 12),
 
-            Container(height: 10.0, color: AppColors.sectionDividerColor),
-
-            const SettingsSectionHeader(
-              icon: Icons.text_fields_rounded,
-              title: 'Font Settings',
+          Container(
+            padding: const EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.0),
             ),
-            const SettingsSliderRow(
-              label: 'Arabic Font Size',
-              initialValue: 28.0,
-              min: 16.0,
-              max: 40.0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SettingsSectionHeader(
+                  icon: Icons.text_fields_rounded,
+                  title: 'Font Settings',
+                ),
+                const SettingsSliderRow(
+                  label: 'Arabic Font Size',
+                  initialValue: 28.0,
+                  min: 16.0,
+                  max: 40.0,
+                ),
+                const SettingsSliderRow(
+                  label: 'Text Font Size',
+                  initialValue: 28.0,
+                  min: 10.0,
+                  max: 30.0,
+                ),
+                SettingsDropdown(
+                  label: 'Script',
+                  items: const ['Uthma', 'Madani', 'Indo-Pak'],
+                  selectedItem: 'Uthma',
+                  onChanged: (value) {},
+                  showLabel: true,
+                ),
+                SettingsDropdown(
+                  label: 'Arabic Font',
+                  items: const ['KFGQ Hafs', 'Naskh', 'Scheherazade'],
+                  selectedItem: 'KFGQ Hafs',
+                  onChanged: (value) {},
+                  showLabel: true,
+                ),
+              ],
             ),
-            const SettingsSliderRow(
-              label: 'Text Font Size',
-              initialValue: 28.0,
-              min: 10.0,
-              max: 30.0,
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.0),
             ),
-            SettingsDropdown(
-              label: 'Script',
-              items: const ['Uthma', 'Madani', 'Indo-Pak'],
-              selectedItem: 'Uthma',
-              onChanged: (value) {},
-              showLabel: true,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SettingsSectionHeader(
+                  icon: Icons.color_lens_outlined,
+                  title: 'Appearence',
+                ),
+                const SettingsToggleRow(
+                  label: 'Always On Display Mode',
+                  value: true,
+                  onChanged: null,
+                ),
+              ],
             ),
-            SettingsDropdown(
-              label: 'Arabic Font',
-              items: const ['KFGQ Hafs', 'Naskh', 'Scheherazade'],
-              selectedItem: 'KFGQ Hafs',
-              onChanged: (value) {},
-              showLabel: true,
-            ),
-
-            Container(height: 10.0, color: AppColors.sectionDividerColor),
-            const SettingsSectionHeader(
-              icon: Icons.color_lens_outlined,
-              title: 'Appearence',
-            ),
-            const SettingsToggleRow(
-              label: 'Always On Display Mode',
-              value: true,
-              onChanged: null,
-            ),
-
-            const SizedBox(height: 20),
-          ],
-        ),
+          ),
+          const SizedBox(height: 20),
+        ],
       ),
     );
   }
@@ -402,7 +432,7 @@ class _SurahPageState extends State<SurahPage> {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double pageMargin = 10.0; // Sob dike 10px margin
     // SettingsPanelWidth screen er 75%
-    final double settingsPanelWidth = screenWidth * 0.75;
+    final double settingsPanelWidth = screenWidth * 0.8;
 
     // MainContentPage er left position (Pushing effect)
     // Settings bondho: 0.0
