@@ -526,9 +526,11 @@ class _SurahPageState extends State<SurahPage> {
         children: [
           // 1. Main Content Page (Slide kore bam dike shore jaabe)
           AnimatedPositioned(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            // MainContent er left position + 10px margin. Settings khola hole left: -75% + 10
+            duration: const Duration(milliseconds: 1200),
+            // curve: Curves.easeInOut,
+            // curve: Curves.easeOutSine,
+            curve: Curves.fastEaseInToSlowEaseOut,
+            // curve: Curves.easeInOutBack,
             left: mainContentLeft + pageMargin,
             right: -mainContentLeft + pageMargin, // Width maintain korar jonno
             top: pageMargin,
@@ -538,8 +540,11 @@ class _SurahPageState extends State<SurahPage> {
 
           // 2. Settings Panel (Daan dik theke slide kore dhukbe)
           AnimatedPositioned(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
+            duration: const Duration(milliseconds: 1200),
+            // curve: Curves.easeInOut,
+            // curve: Curves.easeOutSine,
+            curve: Curves.fastEaseInToSlowEaseOut,
+            // curve: Curves.easeInOutBack,
             // Right position + 10px margin
             right: settingsRight + pageMargin,
             top: pageMargin,
